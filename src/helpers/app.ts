@@ -3,13 +3,14 @@ import {
   BalanceView,
   DivContainer,
   FormInput,
+  Table,
   Title,
 } from "../components/components";
 import { componentIDs, tableHeadData, type ComponentId } from "../constants";
 import { ExpenseDBClient } from "../expenseDBClien/expenseDBClient";
-// import { appObserver } from "../main2";
-import type { EntryType } from "../types";
+import type { EntryType, ExpenseItem } from "../types";
 import { BaseComponent } from "./baseComponent";
+import { TableConstructor } from "./tableConstructor";
 const { ID_BALANCE_COMPONENT, ID_TABLE_COMPONENT, ID_FORM_COMPONENT } =
   componentIDs;
 
@@ -17,7 +18,6 @@ export class App {
   private appContainer: HTMLElement;
   private dbClient: ExpenseDBClient;
   private dbClientInitialized: boolean = false;
-  // private observer = appObserver;
 
   constructor(containerID: string) {
     const el = document.getElementById(containerID);
@@ -43,7 +43,7 @@ export class App {
       if (!btn.dataset.id) return;
 
       this.dbClient.removeExpense(+btn.dataset.id);
-      this.doRerender([ID_BALANCE_COMPONENT, ID_TABLE_COMPONENT]);
+      // this.doRerender([ID_BALANCE_COMPONENT, ID_TABLE_COMPONENT]);
     });
   }
 
@@ -51,51 +51,30 @@ export class App {
     this.createTableRemoveButtonListener();
   }
 
-  private rerenderSpecificComponent(componentsIdsArr: ComponentId[]) {
-    // const balanceComponent = document.getElementById(ID_BALANCE_COMPONENT);
-    const tableComponent = document.getElementById(ID_TABLE_COMPONENT);
-    // const formComponent = document.getElementById(ID_FORM_COMPONENT);
+  // private rerenderSpecificComponent(componentsIdsArr: ComponentId[]) {
+  //   const tableComponent = document.getElementById(ID_TABLE_COMPONENT);
+  //   componentsIdsArr.forEach((oneId) => {
+  //     switch (oneId) {
+  //       case ID_TABLE_COMPONENT:
+  //         {
+  //           const component = tableComponent;
+  //           if (component) {
+  //             component.innerHTML = "";
+  //             tableComponent?.appendChild(this.renderTableComponents());
+  //           }
+  //         }
+  //         break;
+  //       default:
+  //         break;
+  //     }
+  //   });
+  // }
 
-    componentsIdsArr.forEach((oneId) => {
-      switch (oneId) {
-        // case ID_BALANCE_COMPONENT:
-        //   {
-        //     const component = balanceComponent;
-        //     if (component) {
-        //       component.innerHTML = "";
-        //       balanceComponent?.appendChild(this.renderBalanceComponents());
-        //     }
-        //   }
-        //   break;
-        // case ID_FORM_COMPONENT:
-        //   {
-        //     const component = formComponent;
-        //     if (component) {
-        //       component.innerHTML = "";
-        //       formComponent?.appendChild(this.renderFormComponents());
-        //     }
-        //   }
-        //   break;
-        case ID_TABLE_COMPONENT:
-          {
-            const component = tableComponent;
-            if (component) {
-              component.innerHTML = "";
-              tableComponent?.appendChild(this.renderTableComponents());
-            }
-          }
-          break;
-        default:
-          break;
-      }
-    });
-  }
-
-  private async doRerender(componentIds: ComponentId[]) {
-    console.log("DO RERENDER");
-    await this.updateDb();
-    this.rerenderSpecificComponent([...componentIds]);
-  }
+  // private async doRerender(componentIds: ComponentId[]) {
+  //   console.log("DO RERENDER");
+  //   await this.updateDb();
+  //   this.rerenderSpecificComponent([...componentIds]);
+  // }
 
   private getTotal(type: EntryType) {
     return this.dbClient.getTotal(type);
@@ -105,12 +84,15 @@ export class App {
     return this.dbClient.getBalance();
   }
 
+  // private getLocalStore(): ExpenseItem[] {
+  //   return this.getLocalStore();
+  // }
+
   private async updateDb() {
     if (!this.dbClientInitialized) {
       await this.dbClient.init();
       this.dbClientInitialized = true;
     }
-    this.dataDB = await this.dbClient.getAll();
   }
 
   public async startApp() {
@@ -120,24 +102,22 @@ export class App {
     this.createListeners();
   }
 
-  public renderBalanceComponents(): HTMLElement {
-    const BalanceCardIncome = new BalanceCardItem(
-      "Income",
-      "green",
-      // this.counter.getTotalIconme.bind(this.counter)
-      () => this.getTotal("INCOME")
-    );
-    const BalanceCardExpenses = new BalanceCardItem(
-      "Expenses",
-      "red",
-      // this.counter.getTotalExpenes.bind(this.counter)
-      () => this.getTotal("EXPENSE")
+  public createTable() {
+    const table = new TableConstructor(
+      this.dbClient.getLocalStore(),
+      tableHeadData
     );
 
-    // const BalanceView = new DivContainer(
-    //   [new Title(`Balance: ${this.getBalance()}`, "big")],
-    //   "balance-view"
-    // );
+    return table.createTable();
+  }
+
+  public renderBalanceComponents(): HTMLElement {
+    const BalanceCardIncome = new BalanceCardItem("Income", "green", () =>
+      this.getTotal("INCOME")
+    );
+    const BalanceCardExpenses = new BalanceCardItem("Expenses", "red", () =>
+      this.getTotal("EXPENSE")
+    );
 
     const BalanceViewComponent = new DivContainer(
       [new Title(`Balance: `, "big"), new BalanceView(() => this.getBalance())],
@@ -225,80 +205,8 @@ export class App {
   }
 
   public renderTableComponents(): HTMLElement {
-    console.log(
-      "%cTABLE component render",
-      "color: yellow; background: black; font-size: 16px; padding:5px"
-    );
-
-    const createDeleteButton = (id: number) => {
-      const Button = new BaseComponent(
-        { tag: "button" },
-        "remove",
-        undefined,
-        "fom-delete-btn",
-        {
-          "data-id": id,
-        }
-      );
-
-      return Button.render();
-    };
-
-    const createTableHead = (headData: string[]) => {
-      const thead = document.createElement("thead");
-      thead.className = "table-htead";
-      const tr = document.createElement("tr");
-      tr.className = "tabke-htead-tr";
-
-      headData.forEach((e) => {
-        const el = document.createElement("th");
-        el.textContent = e;
-        el.classList = "tabke-htead-tr-th";
-        tr.appendChild(el);
-      });
-
-      return thead.appendChild(tr);
-    };
-
-    const createTableBody = (): HTMLTableSectionElement => {
-      const dbData = this.dbClient.getLocalStore();
-      const tbody = document.createElement("tbody");
-      tbody.className = "table-tbody";
-
-      dbData.forEach((e) => {
-        const tr = document.createElement("tr");
-        tr.classList = "table-tbody-tr";
-        const elementsOrdered = [e.id, e.name, e.amount, e.entryType]; //REMOVE
-
-        elementsOrdered.forEach((eo) => {
-          const td = document.createElement("td");
-          td.className = "table-tbody-tr-td";
-          td.textContent = eo.toString();
-          tr.appendChild(td);
-        });
-        tr.appendChild(document.createElement("td")).appendChild(
-          createDeleteButton(e.id)
-        );
-        tbody.appendChild(tr);
-      });
-
-      return tbody;
-    };
-
-    const finalComponent = new DivContainer(
-      [
-        new Title("Expenses", "middle"),
-        new BaseComponent(
-          { tag: "table" },
-          undefined,
-          [createTableHead(tableHeadData), createTableBody()],
-          "table"
-        ),
-      ],
-      "table-container"
-    );
-
-    return finalComponent.render();
+    const TableComponent = new Table(() => this.createTable());
+    return TableComponent.render();
   }
 
   private renderComponents(): BaseComponent {
@@ -309,7 +217,7 @@ export class App {
     );
 
     const TableContainer = new DivContainer(
-      [this.renderTableComponents()],
+      [new Title("Expenses", "middle").render(), this.renderTableComponents()],
       undefined,
       { id: ID_TABLE_COMPONENT }
     );

@@ -1,6 +1,10 @@
 export type ExpenseItem = {
   id: number;
-  entryType: "EXPENSE" | "INCOME";
+  entryType:EntryType ;
   name: string;
   amount: number;
 };
+
+
+export type EntryType = "EXPENSE" | "INCOME"
+

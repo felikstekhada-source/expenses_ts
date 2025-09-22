@@ -87,32 +87,10 @@ export class BalanceCardItem extends BaseComponent {
   }
 }
 
-// export class BalanceView extends BaseComponent {
-//   private getBalance: () => number;
-//   constructor(getBalance: () => number) {
-//     super(
-//       { tag: "div" },
-//       undefined,
-//       [new Title(`Balance: ${getBalance()}`, "big")],
-//       "balance-view",
-//       undefined
-//     );
-//     this.getBalance = getBalance;
-//     appObserver.subscribe(["expenseAdded", "expenseRemoved"], () =>
-//       this.rerender()
-//     );
-//   }
-
 export class BalanceView extends BaseComponent {
   private getBalance: () => number;
   constructor(getBalance: () => number) {
-    super(
-      { tag: "div" },
-      getBalance().toString(),
-      undefined,
-      "balance-number"
-      // undefined
-    );
+    super({ tag: "div" }, getBalance().toString(), undefined, "balance-number");
     this.getBalance = getBalance;
     appObserver.subscribe(["expenseAdded", "expenseRemoved"], () =>
       this.rerender()
@@ -127,5 +105,31 @@ export class BalanceView extends BaseComponent {
     if (!this.newElement) return;
     const newComponent = new BalanceView(this.getBalance);
     this.newElement.replaceWith(newComponent.render());
+  }
+}
+
+export class Table extends BaseComponent {
+  private makeTable: () => HTMLElement;
+  constructor(makeTable: () => HTMLElement) {
+    super({ tag: "div" }, undefined, [makeTable()]);
+
+    this.makeTable = makeTable;
+    appObserver.subscribe(["expenseRemoved", "expenseAdded"], () =>
+      this.rerender()
+    );
+  }
+
+  private rerender() {
+    if (!this.newElement) {
+      return;
+    } else {
+      console.log(
+        "%cTable component rendered",
+        "color: white; background: black; font-size: 16px; padding:5px"
+      );
+
+      const newComponent = new Table(this.makeTable);
+      this.newElement.replaceWith(newComponent.render());
+    }
   }
 }

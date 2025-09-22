@@ -77,10 +77,6 @@ export class ExpenseDBClient {
   }
 
   public getTotal(type: EntryType) {
-    // const tx = this.db.transaction([this.STORE_NAME], "readonly");
-    // const store = tx.objectStore(this.STORE_NAME);
-    // const all: ExpenseItem[] = await store.getAll();
-
     let total = 0;
 
     this.localStore.forEach((e) => {
@@ -92,7 +88,6 @@ export class ExpenseDBClient {
   }
 
   public getBalance() {
-    // const all = await this.getAll();
     let totalIncome = 0;
     let totalExpense = 0;
 
