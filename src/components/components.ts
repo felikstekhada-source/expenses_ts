@@ -111,12 +111,11 @@ export class BalanceView extends BaseComponent {
 export class Table extends BaseComponent {
   private makeTable: () => HTMLElement;
   constructor(makeTable: () => HTMLElement) {
-    super({ tag: "div" }, undefined, [makeTable()]);
+    super({ tag: "div" }, undefined, [makeTable()], "base-component");
 
     this.makeTable = makeTable;
-    appObserver.subscribe(["expenseRemoved", "expenseAdded"], () =>
-      this.rerender()
-    );
+    // appObserver.subscribe(["expenseRemoved", "expenseAdded"], () =>
+    appObserver.subscribe(["expenseAdded"], () => this.rerender());
   }
 
   private rerender() {

@@ -179,8 +179,22 @@
   }
 }
 
-.balance-card-money,
+/* .balance-card-money,
 .balance-number {
+  box-sizing: border-box;
+  border: 2px solid transparent;
+  animation: highlightBorder 0.5s ease;
+}
+
+@keyframes highlightBorder {
+  0% {
+    border-color: rgba(255, 0, 0, 1);
+  }
+  100% {
+    border-color: transparent;
+  }
+} */
+.base-component {
   box-sizing: border-box;
   border: 2px solid transparent;
   animation: highlightBorder 0.5s ease;

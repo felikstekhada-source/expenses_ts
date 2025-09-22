@@ -6,9 +6,9 @@ import {
   Table,
   Title,
 } from "../components/components";
-import { componentIDs, tableHeadData, type ComponentId } from "../constants";
+import { componentIDs, tableHeadData } from "../constants";
 import { ExpenseDBClient } from "../expenseDBClien/expenseDBClient";
-import type { EntryType, ExpenseItem } from "../types";
+import type { EntryType } from "../types";
 import { BaseComponent } from "./baseComponent";
 import { TableConstructor } from "./tableConstructor";
 const { ID_BALANCE_COMPONENT, ID_TABLE_COMPONENT, ID_FORM_COMPONENT } =
@@ -43,38 +43,12 @@ export class App {
       if (!btn.dataset.id) return;
 
       this.dbClient.removeExpense(+btn.dataset.id);
-      // this.doRerender([ID_BALANCE_COMPONENT, ID_TABLE_COMPONENT]);
     });
   }
 
   private createListeners() {
     this.createTableRemoveButtonListener();
   }
-
-  // private rerenderSpecificComponent(componentsIdsArr: ComponentId[]) {
-  //   const tableComponent = document.getElementById(ID_TABLE_COMPONENT);
-  //   componentsIdsArr.forEach((oneId) => {
-  //     switch (oneId) {
-  //       case ID_TABLE_COMPONENT:
-  //         {
-  //           const component = tableComponent;
-  //           if (component) {
-  //             component.innerHTML = "";
-  //             tableComponent?.appendChild(this.renderTableComponents());
-  //           }
-  //         }
-  //         break;
-  //       default:
-  //         break;
-  //     }
-  //   });
-  // }
-
-  // private async doRerender(componentIds: ComponentId[]) {
-  //   console.log("DO RERENDER");
-  //   await this.updateDb();
-  //   this.rerenderSpecificComponent([...componentIds]);
-  // }
 
   private getTotal(type: EntryType) {
     return this.dbClient.getTotal(type);
@@ -83,10 +57,6 @@ export class App {
   private getBalance() {
     return this.dbClient.getBalance();
   }
-
-  // private getLocalStore(): ExpenseItem[] {
-  //   return this.getLocalStore();
-  // }
 
   private async updateDb() {
     if (!this.dbClientInitialized) {

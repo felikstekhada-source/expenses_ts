@@ -49,6 +49,16 @@ export class ExpenseDBClient {
     }
   }
 
+  private removeElFromDOM(id: string) {
+    const elsToRemove = document.getElementsByClassName("table-tbody-tr");
+    const arr = Array.from(elsToRemove);
+    arr.forEach((e) => {
+      if (e.dataset.id === id) {
+        e.remove();
+      }
+    });
+  }
+
   public async removeExpense(id: number) {
     try {
       const tx = this.db.transaction([this.STORE_NAME], "readwrite");
@@ -56,6 +66,7 @@ export class ExpenseDBClient {
       await store.delete(id);
       await tx.commit();
       ////
+      this.removeElFromDOM(id.toString());
       this.localStore = this.localStore.filter((e) => e.id !== id);
       this.observer.notify("expenseRemoved");
     } catch (err) {

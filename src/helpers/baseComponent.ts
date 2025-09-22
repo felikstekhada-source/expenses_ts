@@ -3,6 +3,7 @@ export class BaseComponent {
   private text?: string;
   private children?: HTMLElement[] | BaseComponent[];
   private className?: string;
+  private baseClassName: string = "base-component";
   private props?: any;
   protected newElement!: HTMLElement;
 
@@ -26,7 +27,9 @@ export class BaseComponent {
     if (this.element.type) {
       this.newElement.setAttribute("type", this.element.type);
     }
-    if (this.className) this.newElement.className = this.className;
+    if (this.className)
+      this.newElement.className = this.baseClassName + ` ${this.className}`;
+
     if (this.text) this.newElement.textContent = this.text;
     return this.newElement;
   }

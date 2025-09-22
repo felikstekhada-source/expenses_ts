@@ -25,14 +25,14 @@ export class TableConstructor {
 
   private createTableHead = (): HTMLTableRowElement => {
     const thead = document.createElement("thead");
-    thead.className = "table-htead";
+    thead.className = "table-htead base-component";
     const tr = document.createElement("tr");
-    tr.className = "tabke-htead-tr";
+    tr.className = "tabke-htead-tr base-component";
 
     this.headData.forEach((e) => {
       const el = document.createElement("th");
       el.textContent = e;
-      el.classList = "tabke-htead-tr-th";
+      el.classList = "tabke-htead-tr-th base-component";
       tr.appendChild(el);
     });
 
@@ -42,15 +42,16 @@ export class TableConstructor {
   private createTableBody = (): HTMLTableSectionElement => {
     const dbData = this.data;
     const tbody = document.createElement("tbody");
-    tbody.className = "table-tbody";
+    tbody.className = "table-tbody base-component";
     dbData.forEach((e) => {
       const tr = document.createElement("tr");
-      tr.classList = "table-tbody-tr";
+      tr.setAttribute("data-id", e.id);
+      tr.classList = "table-tbody-tr base-component";
       const elementsOrdered = [e.id, e.name, e.amount, e.entryType]; //REMOVE
 
       elementsOrdered.forEach((eo) => {
         const td = document.createElement("td");
-        td.className = "table-tbody-tr-td";
+        td.className = "table-tbody-tr-td base-component";
         td.textContent = eo.toString();
         tr.appendChild(td);
       });
